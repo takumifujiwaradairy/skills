@@ -32,6 +32,12 @@ cd .. && rm -rf takumifujiwaradairy-skills
 
 ## Skills
 
+### Planning & architecture
+
+| Skill | Description |
+| --- | --- |
+| [architecture-premise-verify](architecture-premise-verify/) | Force web verification of every external-service feature claim BEFORE recommending an architecture. Prevents the "I assumed service X had feature Y" failure mode that wastes hours of downstream implementation. |
+
 ### Research workflow
 
 | Skill | Description |
