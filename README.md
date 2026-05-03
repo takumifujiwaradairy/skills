@@ -38,6 +38,12 @@ cd .. && rm -rf takumifujiwaradairy-skills
 | --- | --- |
 | [architecture-premise-verify](architecture-premise-verify/) | Force web verification of every external-service feature claim BEFORE recommending an architecture. Prevents the "I assumed service X had feature Y" failure mode that wastes hours of downstream implementation. |
 
+### Skill maintenance
+
+| Skill | Description |
+| --- | --- |
+| [empirical-prompt-tuning](empirical-prompt-tuning/) | Iteratively improve agent-facing instructions (skills / slash commands / CLAUDE.md / code-gen prompts) by having a bias-free executor run them and evaluating two-sidedly until improvements plateau. **Mirrored from [mizchi/skills](https://github.com/mizchi/skills/tree/main/empirical-prompt-tuning) — see `empirical-prompt-tuning/NOTICE.md` for attribution.** |
+
 ### Research workflow
 
 | Skill | Description |
