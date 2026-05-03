@@ -109,6 +109,25 @@ Treat these "absence" pairs as **the most suspicious** and Heavy-tier them by de
 
 **Granularity smell test.** Each pair should be specific enough that a `WebSearch` query can confirm or deny it in one round. "GitHub Actions integration" is too vague; "GitHub Actions `repository_dispatch` event accepts arbitrary `client_payload` JSON" is right.
 
+**Decompose `(permission/scope, endpoint)` into its own pair when calling an external API.** Permission names are written by humans, are often ambiguous, and **frequently do NOT cover the endpoints their name suggests**. A claim like "PAT with `Actions: write` can call `repository_dispatch`" must be decomposed into:
+
+- `(Service, Endpoint exists and accepts the payload shape we plan to send)` — Critical
+- `(Service, the specific permission/scope/role we plan to grant is the one this endpoint accepts)` — Critical, **always Heavy tier**
+
+The second pair is the one that dies silently. Verify against the **endpoint's own documentation page** (the "Required permissions" or "Fine-grained access tokens" section), not against the permission's documentation page. They are written by different teams and routinely disagree.
+
+Examples of permission/endpoint name traps that look obvious but are wrong:
+
+| Tempting assumption | Actual required permission |
+|---|---|
+| GitHub `repository_dispatch` needs `Actions: write` (it triggers a workflow!) | **`Contents: write`** |
+| GitHub `workflow_dispatch` needs `Contents: write` | **`Actions: write`** |
+| AWS S3 `PutObject` needs `s3:PutObject` only | also `kms:GenerateDataKey` if bucket has SSE-KMS |
+| GCP Cloud Run invoke needs `roles/run.invoker` from any caller | needs `iam.serviceAccounts.actAs` on the service account too if caller-as |
+| Slack `chat.postMessage` needs `chat:write` only | also `chat:write.public` to post to channels the bot isn't in |
+
+The shared shape: **the obvious permission name is for the obvious operation; non-obvious operations bind to non-obvious permissions**. If your reasoning is "the permission name has the same word as the endpoint, so it must work", that is a hallucination signal — verify against the endpoint's docs, not your inference.
+
 #### Step 1.5 — Disambiguate ambiguous claims into sub-pairs
 
 For every Critical pair, ask: **"Are there multiple plausible implementations of this claim, with different feasibility?"** If yes, you must split it into sub-pairs (1a, 1b, ...) and verify each independently.
@@ -239,6 +258,19 @@ One blog post saying "you can do this" is not enough if it is unofficial, undate
 
 The cheapest features to misremember are the ones that look standard. The most expensive bugs are the ones that look obvious. Run the skill anyway.
 
+### Anti-pattern 7 — Inferring required permission from the endpoint name
+
+The most expensive permission bug pattern: "this endpoint does X, so it needs the X permission/scope". Routinely false. Examples:
+
+- GitHub `repository_dispatch` (triggers workflow) requires **`Contents: write`**, not `Actions: write` (cost a real session: PAT created with `Actions: write`, Worker deployed, Slack wired up, end-to-end test failed at the final hop with `403 Resource not accessible by personal access token`).
+- GitHub `workflow_dispatch` requires `Actions: write`, mirror-image of the above.
+- Slack `chat.postMessage` to a channel the bot isn't in requires `chat:write.public`, not the obvious `chat:write` alone.
+- AWS S3 `PutObject` to an SSE-KMS bucket requires `kms:GenerateDataKey`, not just `s3:PutObject`.
+
+**Rule**: when the recommendation involves "Service A's `<some permission>` lets us call endpoint `Y`", **always open the endpoint's own documentation page** ("Required permissions" / "Fine-grained access tokens" section) and confirm by string-match — not by inference from the permission's name. This is true even when (especially when) the names rhyme.
+
+The downstream cost of this error is uniquely high: PAT/role creation, secret distribution, and end-to-end testing all complete successfully **except for the final API call**, which fails with `403` only at runtime. Cheaper to spend 30 seconds on the docs page than 30 minutes redoing the credential chain.
+
 ---
 
 ## Phrases that should make you stop and verify
@@ -254,6 +286,8 @@ If any of these are about to appear in your response and the surrounding subject
 - "this is a standard pattern"
 - "obviously you can"
 - "simply configure"
+- "**`<scope/permission>` lets you call `<endpoint>`**" — never assert without opening the endpoint's docs page (Anti-pattern 7)
+- "**give it `<permission>` and it can `<action>`**" — same: confirm by string-match against the endpoint docs, not by inference
 
 These phrases are linguistic signatures of unverified premises.
 
