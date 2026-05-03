@@ -38,6 +38,12 @@ cd .. && rm -rf takumifujiwaradairy-skills
 | --- | --- |
 | [architecture-premise-verify](architecture-premise-verify/) | Force web verification of every external-service feature claim BEFORE recommending an architecture. Prevents the "I assumed service X had feature Y" failure mode that wastes hours of downstream implementation. |
 
+### Learning
+
+| Skill | Description |
+| --- | --- |
+| [quiz-me](quiz-me/) | Active-recall 5-question quiz on a topic the user has just learned (or one they specify). Mixes definition / why / how / when / boundary, asks one question at a time via `AskUserQuestion`, gives instant feedback, and ends with a named gap and a concrete next step. |
+
 ### Research workflow
 
 | Skill | Description |
