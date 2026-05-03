@@ -184,7 +184,14 @@ Never write the file before the folder is confirmed.
 
 Generate one filename following the naming convention. Show it to the user and **confirm before writing** (one short `AskUserQuestion` is fine, or just present and ask "OK?").
 
-If the file already exists at the target path, do **not** overwrite. Append a numeric suffix (`_2`, `_3`) and re-confirm — or ask the user whether to merge into the existing file instead.
+#### Collision handling (file already exists at target path)
+
+Do **not** silently overwrite. Apply this decision rule:
+
+1. **Compute topic overlap** between the proposed filename and the existing one. Topic overlap = (matching `<TopicPrefix>` + matching first `<具体>` segment) / (total segments in the shorter filename).
+2. **If overlap ≥ 70%** → propose **merge** as the default. The existing note already covers this topic; appending a near-duplicate fragments the vault. Use `Edit` to add a new section to the existing file rather than `Write` a new file.
+3. **If overlap < 70%** → propose **suffix `_2`, `_3`** as the default. The collision is incidental, the topics are genuinely different.
+4. **Always present both options via `AskUserQuestion`** even when defaulting; never pick silently. Include a 1-line reason ("既存と内容が重なるのでmerge推奨" or "別トピックなのでsuffix推奨").
 
 ### Step 4 — Generate the note body
 
@@ -225,14 +232,16 @@ Adapt sections to the topic. Mandatory sections: frontmatter, title, **学び / 
 
 ### Step 5 — Find related notes (wikilinks)
 
-Before writing, run `Glob` + `Grep` against the vault to find 2-4 related notes:
+Before writing, find 2-4 related notes via this **bounded recipe** (do not over-search):
 
-- Glob: `~/Documents/my_notes/**/*.md` filtered by main topic keywords
-- Grep: search for the most distinctive 1-2 keywords inside `*.md` to find notes that mention the topic
+1. **Pick the top 2 keywords** from the proposed title (the most distinctive nouns / proper nouns).
+2. **Glob by filename**: `Glob ~/Documents/my_notes/**/*<keyword1>*.md` then `Glob ~/Documents/my_notes/**/*<keyword2>*.md`.
+3. **Grep verification only when filename match returns ≤ 1 hit**: `Grep -l <keyword> ~/Documents/my_notes/02_ナレッジ ~/Documents/my_notes/01_ログ`.
+4. **Filename match is sufficient** — do **NOT** `Read` the candidate files to confirm relevance. The vault's filename convention is descriptive enough.
+5. **Cap at 4 wikilinks**. More dilutes the graph.
+6. **Prefer recent** (`02_ナレッジ/`, `01_ログ/作業ログ/`) over `06_スタッシュ/` and `100_アーカイブ/` when ranking candidates.
 
-Prefer recent (`02_ナレッジ/` and `01_ログ/作業ログ/` over `06_スタッシュ/` and `100_アーカイブ/`).
-
-Add them to the `## 関連ノート` section as `[[<filename without .md>]]` Obsidian wikilinks. If nothing matches, leave the section with a single line `- (none yet)` rather than omitting it.
+Add them to the `## 関連ノート` section as `[[<filename without .md>]]` Obsidian wikilinks. If nothing matches even after Step 3, leave the section with a single line `- (none yet)` rather than omitting it.
 
 ### Step 6 — Write the file
 
@@ -240,9 +249,20 @@ Use `Write` tool with the full path. Confirm the path one more time in the final
 
 ### Step 7 — Update index, if applicable
 
-If the chosen folder has a co-located index file (e.g., `02_ナレッジ/08_AI活用/AI活用_目次.md`), append a one-line entry to the appropriate category table in the index. Same Underscore wikilink format. If unsure where in the index, ask before editing.
+**Index discovery (concrete recipe, not prose):**
 
-If the folder has no index, skip — do not create one.
+```bash
+ls <chosen_folder> | grep -E '目次|index'
+```
+
+- **Co-located = same folder only**, not parent. Do NOT traverse upward into `02_ナレッジ/` looking for an index when the chosen folder is `02_ナレッジ/02_ITスキル/`.
+- If the command returns 0 lines → **skip Step 7 silently**. Do not create an index.
+- If it returns 1 line → that is the index file. Append a one-line entry under the appropriate category table.
+- If it returns 2+ lines → ask the user which one to update.
+
+When appending, use the same Underscore wikilink format already present in the file (`[[<filename without .md>]]`). If the index has multiple categories and you cannot tell which one fits, ask before editing.
+
+Never create a new index file from this skill.
 
 ### Step 8 — Confirm to user
 
