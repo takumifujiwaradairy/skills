@@ -52,6 +52,12 @@ cd .. && rm -rf takumifujiwaradairy-skills
 | [research-verify](research-verify/) | Cross-check facts in `research-raw.md` against multiple sources, validate dates and URLs; writes `research-verified.md`. |
 | [research-document](research-document/) | Render `research-verified.md` into a neutral, decision-ready Markdown comparison report. |
 
+### Language learning
+
+| Skill | Description |
+| --- | --- |
+| [check_english](check_english/) | Review the user's English text against IELTS Band 7 (C1) standards. Targets the user's IELTS 7.0 goal — flags Japanese-influenced patterns (topic-marker leakage, article omission with abstract nouns, "I think" overuse, 〜することができる verbosity, etc.), suggests more precise / idiomatic alternatives, and avoids over-correction of stylistic choices. Invoke with `/check_english`. |
+
 ## Contributing / maintaining
 
 Changes are made via pull requests against `main`. See [`CLAUDE.md`](CLAUDE.md) for skill conventions and review guidelines.
