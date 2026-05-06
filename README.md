@@ -44,6 +44,12 @@ cd .. && rm -rf takumifujiwaradairy-skills
 | --- | --- |
 | [empirical-prompt-tuning](empirical-prompt-tuning/) | Iteratively improve agent-facing instructions (skills / slash commands / CLAUDE.md / code-gen prompts) by having a bias-free executor run them and evaluating two-sidedly until improvements plateau. **Mirrored from [mizchi/skills](https://github.com/mizchi/skills/tree/main/empirical-prompt-tuning) — see `empirical-prompt-tuning/NOTICE.md` for attribution.** |
 
+### Personal use (maintainer-only)
+
+| Skill | Description |
+| --- | --- |
+| [mynote-add](mynote-add/) | Capture knowledge into [@takumifujiwaradairy](https://github.com/takumifujiwaradairy)'s local Obsidian vault at `~/Documents/my_notes/`, following the existing folder taxonomy / naming convention / frontmatter format / wikilink discipline. **Personal-use only — vault path and folder structure are hardcoded for the maintainer.** Inspired by [claudesidian](https://github.com/heyitsnoah/claudesidian) and [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills). |
+
 ### Research workflow
 
 | Skill | Description |
