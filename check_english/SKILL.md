@@ -43,15 +43,30 @@ Each bullet:
 
 > `original phrase` → `suggested phrase` — *one-line why* (which IELTS criterion it touches).
 
-Group by criterion if there are 5+ issues:
-- **Lexical Resource** (word choice, collocation, register, idiom)
-- **Grammatical Range and Accuracy** (tense, articles, agreement, sentence structure)
-- **Coherence and Cohesion** (linking words, paragraph flow — only if text is 3+ sentences)
-- **Japanese-influenced pattern** (literal translation artefacts; flag separately so the user can build awareness)
+**Grouping rule**: if there are 5+ issues total, group under criterion headings in this order:
+
+1. **Lexical Resource** (word choice, collocation, register, idiom)
+2. **Grammatical Range and Accuracy** (tense, articles, agreement, sentence structure)
+3. **Coherence and Cohesion** (linking words, paragraph flow — only if text is 3+ sentences)
+4. **Japanese-influenced pattern** (literal translation artefacts; flag separately so the user can build awareness)
+
+Include every heading that has **at least one bullet**, even if it has only one. Omit headings that have zero. The grouping itself is a teaching aid — consistency beats compactness.
+
+If there are fewer than 5 issues, list them flat without headings.
 
 ### 3. Suggested rewrite (only if Band 6.5 or below)
 
 Provide a single revised version that hits Band 7. Keep the user's voice and intent — don't replace their content with your own.
+
+**Length matching**: mirror the input's scale and structure.
+
+- IELTS Task-2-style essay (3+ paragraphs): preserve paragraph count and approximate word count; rewrite the whole essay.
+- Slack message, PR comment, single sentence, short email: rewrite as a single tightened block at roughly the same length.
+- Do not expand a short message into an essay or compress an essay into a paragraph. The user wants their text fixed at the same scale, not reframed.
+
+**Conflict resolution (length vs cohesion)**: if a paragraph in the input has no linker and looks like a candidate for merging into an adjacent paragraph, **preserve the paragraph break and add the missing linker** instead of merging. Length-matching takes precedence over cohesion fixes inside the rewrite. Note the cohesion issue separately in the Issues section, but do not solve it by collapsing structure.
+
+If the verdict is **Band 7+**, omit this section entirely (do not write "Suggested rewrite: (none)" — just skip it).
 
 ### 4. One-line "what to practise" takeaway
 
